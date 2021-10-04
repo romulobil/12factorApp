@@ -1,0 +1,40 @@
+version: "3"
+services:
+  api-rest:
+    build: .
+    image: 'api-rest:${API_VERSION}'
+    volumes:
+      - ./:/code
+    labels:
+      - 'app.environment=${ENV_APP}'
+    networks:
+      backend:
+        aliases:
+          - "apps"
+
+  redis:
+    image: redis
+    volumes:
+      - api:/data
+    networks:
+      - backend
+    labels:
+      - 'app.environment=${ENV_APP}'
+
+  load-balancer:
+    container_name: balancer
+    build: loadbalancer
+    image: loadbalancer:0.1.0
+    ports:
+      - 8080:80
+    networks:
+      - backend
+
+volumes:
+  api:
+    name: api_${ENV_APP}
+    external: false
+
+networks:
+  backend:
+    driver: bridge
