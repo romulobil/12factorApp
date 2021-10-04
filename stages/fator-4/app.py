@@ -1,11 +1,16 @@
 import os
 from flask import Flask
+from redis import Redis
 
 host_run=os.environ.get('HOST_RUN', '0.0.0.0')
 debug=os.environ.get('DEBUG', 'True')
-app = Flask(__name__)
+redis_host=os.environ.get('REDIS_HOST', 'redis')
+redis_port=os.environ.get('REDIS_PORT', 6379)
 
-COUNTER = 0;
+app = Flask(__name__)
+redis = Redis(host=redis_host, port=redis_port)
+
+COUNTER = 0
 @app.route('/')
 def clicks():
     global COUNTER
