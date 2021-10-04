@@ -11,11 +11,6 @@ services:
       backend:
         aliases:
           - "apps"
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://${GELF_HOST}:${GELF_PORT}"
-        tag: "api/api_${ENV_APP}"
 
   redis:
     image: redis
@@ -25,11 +20,6 @@ services:
       - backend
     labels:
       - 'app.environment=${ENV_APP}'
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://${GELF_HOST}:${GELF_PORT}"
-        tag: "api/api_${ENV_APP}"
 
   load-balancer:
     container_name: balancer
@@ -39,11 +29,6 @@ services:
       - 8080:80
     networks:
       - backend
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://${GELF_HOST}:${GELF_PORT}"
-        tag: "balancer/api_${ENV_APP}"
 
 volumes:
   api:
