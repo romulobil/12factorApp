@@ -1,0 +1,38 @@
+version: "3"
+services:
+  api-rest:
+    build: .
+    image: 'api-rest:${API_VERSION}'
+    volumes:
+      - ./:/code
+    ports:
+      - 5000:5000
+    labels:
+      - 'app.environment=${ENV_APP}'
+    environment:
+      - HOST_RUN=${HOST_RUN}
+      - DEBUG=${DEBUG}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://${GELF_HOST}:${GELF_PORT}"
+        tag: "api/api_${ENV_APP}"
+
+  redis:
+    image: redis
+    volumes:
+      - api:/data
+    labels:
+      - 'app.environment=${ENV_APP}'
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://${GELF_HOST}:${GELF_PORT}"
+        tag: "api/api_${ENV_APP}"
+
+volumes:
+  api:
+    name: api_${ENV_APP}
+    external: false
