@@ -13,7 +13,9 @@ redis = Redis(host=redis_host, port=redis_port)
 @app.route('/')
 def clicks():
     redis.incr('hits')
-    return {"clicks": str(redis.get('hits'))}
+    return {"clicks": str(redis.get('hits'))
+            "hostname": str(socket.gethostname())
+           }
 
 if __name__ == "__main__":
     app.run(host=host_run, debug=debug)
