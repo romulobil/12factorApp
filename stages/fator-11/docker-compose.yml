@@ -5,8 +5,6 @@ services:
     image: 'api-rest:${API_VERSION}'
     volumes:
       - ./:/code
-    ports:
-      - 5000:5000
     labels:
       - 'app.environment=${ENV_APP}'
     environment:
@@ -14,7 +12,7 @@ services:
       - DEBUG=${DEBUG}
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
-
+    
     networks:
       backend:
         aliases:
@@ -32,11 +30,27 @@ services:
       - api:/data
     labels:
       - 'app.environment=${ENV_APP}'
+    networks:
+      - backend
     logging:
       driver: gelf
       options:
         gelf-address: "udp://${GELF_HOST}:${GELF_PORT}"
         tag: "api/api_${ENV_APP}"
+
+  load-balancer:
+    container_name: balancer
+    build: loadbalancer
+    image: loadbalancer:0.1.0
+    ports:
+      - 80:80
+    networks:
+      - backend
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://${GELF_HOST}:${GELF_PORT}"
+        tag: "balancer/api_${ENV_APP}"
 
 volumes:
   api:
